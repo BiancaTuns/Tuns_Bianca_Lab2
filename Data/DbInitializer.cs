@@ -15,7 +15,7 @@ namespace Tuns_Bianca_Lab2.Data
                 {
                     return; // BD a fost creata anterior
                 }
-                context.Books.AddRange(
+             /*   context.Books.AddRange(
                 new Book
                 {
                     Title = "Baltagul",
@@ -35,7 +35,7 @@ namespace Tuns_Bianca_Lab2.Data
                     Price=Decimal.Parse("27")}
                
                 );
-
+             */
 
                 context.Customers.AddRange(
                 new Customer

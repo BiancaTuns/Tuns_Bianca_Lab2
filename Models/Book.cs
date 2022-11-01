@@ -9,8 +9,9 @@ namespace Tuns_Bianca_Lab2.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Author { get; set; }
+        public int? AuthorID { get; set; }
+        public Authors? Author { get; set; }
         public decimal Price { get; set; }
-        public ICollection<Order> Orders { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }

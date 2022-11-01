@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tuns_Bianca_Lab2.Data;
 
@@ -11,9 +12,10 @@ using Tuns_Bianca_Lab2.Data;
 namespace Tuns_Bianca_Lab2.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20221025154734_newmigration")]
+    partial class newmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,27 +23,6 @@ namespace Tuns_Bianca_Lab2.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Authors", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Authors");
-                });
 
             modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Book", b =>
                 {
@@ -51,8 +32,9 @@ namespace Tuns_Bianca_Lab2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AuthorID")
-                        .HasColumnType("int");
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -62,8 +44,6 @@ namespace Tuns_Bianca_Lab2.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorID");
 
                     b.ToTable("Book", (string)null);
                 });
@@ -115,17 +95,6 @@ namespace Tuns_Bianca_Lab2.Migrations
                     b.ToTable("Order", (string)null);
                 });
 
-            modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Book", b =>
-                {
-                    b.HasOne("Tuns_Bianca_Lab2.Models.Authors", "Author")
-                        .WithMany("Book")
-                        .HasForeignKey("AuthorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Order", b =>
                 {
                     b.HasOne("Tuns_Bianca_Lab2.Models.Book", "Book")
@@ -143,11 +112,6 @@ namespace Tuns_Bianca_Lab2.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Authors", b =>
-                {
-                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("Tuns_Bianca_Lab2.Models.Book", b =>

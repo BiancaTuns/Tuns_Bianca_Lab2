@@ -20,5 +20,6 @@ base(options)
             modelBuilder.Entity<Book>().ToTable("Book");
 
         }
+        public DbSet<Tuns_Bianca_Lab2.Models.Authors> Authors { get; set; }
     }
 }
