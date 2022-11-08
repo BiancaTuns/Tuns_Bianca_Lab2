@@ -20,10 +20,49 @@ namespace Tuns_Bianca_Lab2.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
         {
-            var libraryContext = _context.Books.Include(b => b.Author);
-            return View(await libraryContext.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+            var books = from b in _context.Books
+                        select b;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(s => s.Title.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    books = books.OrderByDescending(b => b.Title);
+                    break;
+                case "Price":
+                    books = books.OrderBy(b => b.Price);
+                    break;
+                case "price_desc":
+                    books = books.OrderByDescending(b => b.Price);
+                    break;
+                default:
+                    books = books.OrderBy(b => b.Title);
+                    break;
+            }
+            int pageSize = 2;
+            return View(await PaginatedList<Book>.CreateAsync(books.AsNoTracking(), pageNumber ??
+           1, pageSize));
         }
 
         // GET: Books/Details/5
@@ -161,25 +200,24 @@ namespace Tuns_Bianca_Lab2.Controllers
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (id == null)
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
-            var book = await _context.Books
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (book != null)
+            try
             {
-               return NotFound();
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            if(saveChangesError.GetValueOrDefault())
+            catch (DbUpdateException /* ex */)
             {
-                ViewData["ErrorMessage"] =
-                    "Delete fain=led. Try again.";
+
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
-            return View(book);
         }
 
         private bool BookExists(int id)
